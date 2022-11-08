@@ -1,25 +1,52 @@
---namespace=gautam-test 
+# WHAT
+This project is the sample of local deployment of full stack application with Kubernetes. Application is written in React as frontend and go as backend language. The idea is how to get started with Kubernetes deployment and maybe next step is to deploy it to cloud with multi stage envrionment. 
 
+# Backend 
+1. Backend - Go
+    - Web Framework - Gin Gonic // go.mod file 
+    - Gin Gonic server - main.go file
+    - Dockerfile - to run the server 
 
-1. kubectl apply -f nginx-deployment.yaml --namespace=gautam-test 
-2. kubectl get pod --namespace=gautam-test | kubectl describe pod nginx-deployment-78cc6468fb-fvlb5 --namespace=gautam-test 
-3. kubectl get service --namespace=gautam-test | kubectl describe service nginx-service --namespace=gautam-test 
-4. kubectl get pod -o wide --namespace=gautam-test // more output about the pod
+- Steps
+    1. create a backend directory in the peoject root
+    2. create main.go and fill out the sample go code
+        - go mod init backend
+        - go mod tidy
+    3. create Dockerfile
+        - docker build --tag 300974211/go-backend .
+        - docker push 300974211/go-backend
 
-5. kubectl delete -f nginx-deployment.yaml --namespace=gautam-test | kubectl delete -f nginx-service.yaml --namespace=gautam-test
+# Frontend
+2. Frontend - React
+- steps 
+    1. npx create-react-app client // in the root directory
+    2. npm i axios  --save
+    3. Update src/app.js code
+    4. create a dockerfile
+        - docker build -t 300974211/frontend
+        - docker push 300974211/frontend
 
-# MENIFEST FILE 
-1. METADATA contains lables 
-    - you give key-value pair for component as a label. and this label sticks to this component
-2. SPEC contains selectors 
+# Kubernetes manifest files
+3. Kubernetes file 
+- steps 
+    1. create Backend deployment file with service
+    2. create frontend deployment file with service
+    3. create persistance volume // to persist database's data with service
+    4. create database deployment file 
+    5. create Ingress Service
+        - NGINX Ingress Controller
+        - kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.4.0/deploy/static/provider/cloud/deploy.yaml
+        - minikube addons enable ingress
 
+# Local deployment
+4. Local Deploy
+      1. on the project root execute: kubectl apply -f k8s
+      2. check if everything is working as expected
+        - kubectl get all
+        - minikube dashboard
+      3. Finally, let’s see if our application is indeed running. 
+        - minikube ip
 
-# PV and PV Claim
-
-We will use a persistent volume (PV) to define a directory in our host machine that we will allow our Postgres container to use to store data files. Then, a persistent volume claim (PVC) is used to define a “request” for some of that available disk space that a specific container can make. 
-
-In short, a persistent volume says to K8s “here’s some storage that the cluster can use” and a persistent volume claim says “here’s a portion of that storage that’s available for containers to use”.
-
-
-In summary: We created a persistent volume that defines some disk space in our machine that’s available to the cluster; then we defined a persistent volume claim that represents a request of some of that space that a container can have access to; after that we defined a volume within our pod configuration in our deployment to point to that persistent volume claim; and finally we defined a volume mount in our container that uses that volume to store the Postgres database files.
-
+# Credit
+5. Credit
+    - https://betterprogramming.pub/deploy-a-full-stack-go-and-react-app-on-kubernetes-4f31cdd9a48b
